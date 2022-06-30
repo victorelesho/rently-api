@@ -1,3 +1,4 @@
+const config = require('config');
 require ('express-async-errors');
 const winston = require('winston');
 require('winston-mongodb');
@@ -6,7 +7,7 @@ winston.configure({
     level: 'info',
     format: winston.format.combine(
         winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
+          format: 'YYYY-MM-DD HH:mm:ss' 
         }),
         winston.format.errors({ stack: true }),
         winston.format.splat(),
@@ -29,7 +30,7 @@ winston.configure({
       }),
       
       new winston.transports.MongoDB({ 
-        db: 'mongodb://localhost/vidly',
+        db: config.get('db'),
         level: 'info', 
         options: { useUnifiedTopology: true },
         handleExceptions: true,
