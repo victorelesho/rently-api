@@ -1,3 +1,4 @@
+const moment = require('moment');
 const mongoose = require('mongoose');
 const Joi = require('joi');
 const { genreSchema } = require('./genre');
@@ -57,11 +58,24 @@ const rentalSchema = new mongoose.Schema({
     rentalFee: { 
         type: Number, 
         min: 0
-    }   
+    }    
 });
 
-const Rental = mongoose.model("Rental", rentalSchema);
+rentalSchema.statics.lookup = function(customerId, movieId) {
+    return this.findOne({
+        'customer._id': customerId, 
+        'movie._id': movieId
+    });
+};
 
+rentalSchema.methods.return = function() {
+    this.dateReturned = new Date();
+
+    const rentalDays = moment().diff(this.dateOut, 'days');
+    this.rentalFee = rentalDays * this.movie.dailyRentalRate;
+};
+
+const Rental = mongoose.model("Rental", rentalSchema);
 
 //function to validate inputs using joi
 function validateRental(rental) {
